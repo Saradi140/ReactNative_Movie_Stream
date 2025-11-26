@@ -10,7 +10,7 @@
 
 export const TMDB_CONFIG = {
   // Replace this with your own API key from https://www.themoviedb.org/settings/api
-  API_KEY: 'b6801d9ddab7f53e631a50d2f7ddca3d',
+  API_KEY: '08359b77434741ff319ec6e7fbdce771',
   BASE_URL: 'https://api.themoviedb.org/3',
   IMAGE_BASE_URL: 'https://image.tmdb.org/t/p/w500',
   

@@ -43,7 +43,7 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="details" options={{ headerShown: true, title: 'Details' }} />
+      <Stack.Screen name="details" options={{ headerShown: true, title: 'Movie Details' }} />
     </Stack>
   );
 }

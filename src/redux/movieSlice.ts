@@ -9,12 +9,14 @@ interface Movie {
 interface MoviesState {
   allMovies: Movie[];
   favorites: Movie[];
+  selectedMovie: Movie | null;
   loading: boolean;
 }
 
 const initialState: MoviesState = {
   allMovies: [],
   favorites: [],
+  selectedMovie: null,
   loading: false,
 };
 
@@ -40,8 +42,11 @@ const moviesSlice = createSlice({
     loadFavorites: (state, action: PayloadAction<Movie[]>) => {
       state.favorites = action.payload;
     },
+    setSelectedMovie: (state, action: PayloadAction<Movie | null>) => {
+      state.selectedMovie = action.payload;
+    },
   },
 });
 
-export const { setMovies, addFavorite, removeFavorite, setLoading, loadFavorites } = moviesSlice.actions;
+export const { setMovies, addFavorite, removeFavorite, setLoading, loadFavorites, setSelectedMovie } = moviesSlice.actions;
 export default moviesSlice.reducer;

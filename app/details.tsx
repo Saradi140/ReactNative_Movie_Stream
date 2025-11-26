@@ -1,48 +1,38 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
     Alert,
     Image,
     ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View,
+    View
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTheme } from '../src/hooks/useTheme';
 import { addFavorite, removeFavorite } from '../src/redux/movieSlice';
 import { RootState } from '../src/redux/store';
-import { colors, spacing } from '../src/styles/theme';
 
 export default function DetailsScreen() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const params = useLocalSearchParams();
-  const [movie, setMovie] = useState<any>(null);
+  const movie = useSelector((state: RootState) => state.movies.selectedMovie);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [loading, setLoading] = useState(true);
   const favorites = useSelector((state: RootState) => state.movies.favorites);
+  const { colors, spacing } = useTheme();
 
   useEffect(() => {
-    try {
-      if (params.movie && typeof params.movie === 'string') {
-        const parsedMovie = JSON.parse(params.movie);
-        setMovie(parsedMovie);
-        
-        // Check if it's a favorite
-        const favorite = favorites.some((fav: any) => fav.id === parsedMovie.id);
-        setIsFavorite(favorite);
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Failed to load item details');
+    if (!movie) {
       router.back();
-    } finally {
-      setLoading(false);
+      return;
     }
-  }, [params.movie, favorites]);
+    // Check if it's a favorite
+    const favorite = favorites.some((fav: any) => fav.id === movie.id);
+    setIsFavorite(favorite);
+  }, [movie, favorites, router]);
 
   const handleToggleFavorite = async () => {
     if (!movie) return;
@@ -71,21 +61,16 @@ export default function DetailsScreen() {
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
-  }
-
   if (!movie) {
+    const styles = createStyles(colors, spacing);
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Item not found</Text>
       </View>
     );
   }
+
+  const styles = createStyles(colors, spacing);
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -156,121 +141,122 @@ export default function DetailsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: colors.error,
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.cardBackground,
-  },
-  backButton: {
-    padding: spacing.sm,
-  },
-  favoriteButton: {
-    padding: spacing.sm,
-  },
-  image: {
-    width: '100%',
-    height: 300,
-  },
-  content: {
-    padding: spacing.lg,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  rating: {
-    fontSize: 16,
-    color: colors.success,
-    marginLeft: spacing.sm,
-    fontWeight: '600',
-  },
-  description: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    lineHeight: 24,
-    marginBottom: spacing.lg,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.cardBackground,
-    marginBottom: spacing.sm,
-  },
-  infoLabel: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    fontWeight: '600',
-  },
-  infoValue: {
-    fontSize: 14,
-    color: colors.text,
-  },
-  section: {
-    marginVertical: spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.primary,
-    marginBottom: spacing.md,
-  },
-  ingredient: {
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: spacing.sm,
-    lineHeight: 20,
-  },
-  instruction: {
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: spacing.md,
-    lineHeight: 22,
-  },
-  actionButton: {
-    backgroundColor: colors.primary,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: 8,
-    marginVertical: spacing.lg,
-    gap: spacing.sm,
-  },
-  actionButtonText: {
-    color: colors.background,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  favoriteButtonText: {
-    color: colors.text,
-  },
-});
+const createStyles = (colors: any, spacing: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    loadingContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    errorText: {
+      color: colors.error,
+      fontSize: 16,
+      textAlign: 'center',
+      marginTop: spacing.lg,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      backgroundColor: colors.cardBackground,
+    },
+    backButton: {
+      padding: spacing.sm,
+    },
+    favoriteButton: {
+      padding: spacing.sm,
+    },
+    image: {
+      width: '100%',
+      height: 300,
+    },
+    content: {
+      padding: spacing.lg,
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: colors.text,
+      marginBottom: spacing.md,
+    },
+    ratingContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: spacing.md,
+    },
+    rating: {
+      fontSize: 16,
+      color: colors.success,
+      marginLeft: spacing.sm,
+      fontWeight: '600',
+    },
+    description: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      lineHeight: 24,
+      marginBottom: spacing.lg,
+    },
+    infoRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.cardBackground,
+      marginBottom: spacing.sm,
+    },
+    infoLabel: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      fontWeight: '600',
+    },
+    infoValue: {
+      fontSize: 14,
+      color: colors.text,
+    },
+    section: {
+      marginVertical: spacing.lg,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.primary,
+      marginBottom: spacing.md,
+    },
+    ingredient: {
+      fontSize: 14,
+      color: colors.text,
+      marginBottom: spacing.sm,
+      lineHeight: 20,
+    },
+    instruction: {
+      fontSize: 14,
+      color: colors.text,
+      marginBottom: spacing.md,
+      lineHeight: 22,
+    },
+    actionButton: {
+      backgroundColor: colors.primary,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing.md,
+      borderRadius: 8,
+      marginVertical: spacing.lg,
+      gap: spacing.sm,
+    },
+    actionButtonText: {
+      color: colors.background,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    favoriteButtonText: {
+      color: colors.text,
+    },
+  });

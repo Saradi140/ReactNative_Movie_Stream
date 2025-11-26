@@ -12,15 +12,16 @@ import {
     View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadFavorites, removeFavorite } from '../../src/redux/movieSlice';
+import { useTheme } from '../../src/hooks/useTheme';
+import { loadFavorites, removeFavorite, setSelectedMovie } from '../../src/redux/movieSlice';
 import { RootState } from '../../src/redux/store';
-import { colors, spacing } from '../../src/styles/theme';
 
 export default function FavoritesScreen() {
   const router = useRouter();
   const dispatch = useDispatch();
   const favorites = useSelector((state: RootState) => state.movies.favorites);
   const [loading, setLoading] = useState(true);
+  const { colors, spacing } = useTheme();
 
   useFocusEffect(
     useCallback(() => {
@@ -56,7 +57,10 @@ export default function FavoritesScreen() {
   const renderFavorite = ({ item }: any) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => router.push({ pathname: '/details', params: { movie: JSON.stringify(item) } })}
+      onPress={() => {
+        dispatch(setSelectedMovie(item));
+        router.navigate('/details');
+      }}
     >
       <Image source={{ uri: item.image }} style={styles.image} />
       <View style={styles.cardContent}>
@@ -83,6 +87,8 @@ export default function FavoritesScreen() {
       </View>
     </TouchableOpacity>
   );
+
+  const styles = createStyles(colors, spacing);
 
   if (loading) {
     return (
@@ -120,100 +126,100 @@ export default function FavoritesScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginTop: spacing.lg,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginTop: spacing.md,
-  },
-  header: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.cardBackground,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-  listContainer: {
-    padding: spacing.md,
-  },
-  card: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: 12,
-    marginBottom: spacing.md,
-    overflow: 'hidden',
-    flexDirection: 'row',
-  },
-  image: {
-    width: 100,
-    height: 100,
-  },
-  cardContent: {
-    flex: 1,
-    padding: spacing.md,
-    justifyContent: 'space-between',
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.xs,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.text,
-    flex: 1,
-  },
-  removeButton: {
-    marginLeft: spacing.sm,
-  },
-  description: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rating: {
-    fontSize: 13,
-    color: colors.text,
-    marginLeft: spacing.xs,
-    fontWeight: '600',
-  },
-});
+const createStyles = (colors: any, spacing: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    loadingContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    emptyContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: spacing.lg,
+    },
+    emptyTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.text,
+      marginTop: spacing.lg,
+    },
+    emptyText: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginTop: spacing.md,
+    },
+    header: {
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.cardBackground,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    headerSubtitle: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginTop: spacing.xs,
+    },
+    listContainer: {
+      padding: spacing.md,
+    },
+    card: {
+      backgroundColor: colors.cardBackground,
+      borderRadius: 12,
+      marginBottom: spacing.md,
+      overflow: 'hidden',
+      flexDirection: 'row',
+    },
+    image: {
+      width: 100,
+      height: 100,
+    },
+    cardContent: {
+      flex: 1,
+      padding: spacing.md,
+      justifyContent: 'space-between',
+    },
+    titleRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: spacing.xs,
+    },
+    title: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.text,
+      flex: 1,
+    },
+    removeButton: {
+      marginLeft: spacing.sm,
+    },
+    description: {
+      fontSize: 13,
+      color: colors.textSecondary,
+      marginBottom: spacing.sm,
+    },
+    ratingContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    rating: {
+      fontSize: 13,
+      color: colors.text,
+      marginLeft: spacing.xs,
+      fontWeight: '600',
+    },
+  });

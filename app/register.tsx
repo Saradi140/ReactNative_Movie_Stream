@@ -3,9 +3,9 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { useTheme } from '../src/hooks/useTheme';
 import { loginSuccess } from '../src/redux/authSlice';
 import { AppDispatch } from '../src/redux/store';
-import { colors, spacing } from '../src/styles/theme';
 import { RegistrationFormData, registrationSchema } from '../src/utils/validationSchemas';
 
 export default function RegisterScreen() {
@@ -21,6 +21,7 @@ export default function RegisterScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
+  const { colors, spacing } = useTheme();
 
   const validateForm = async () => {
     try {
@@ -70,6 +71,8 @@ export default function RegisterScreen() {
       setErrors({ ...errors, [field]: undefined });
     }
   };
+
+  const styles = createStyles(colors, spacing);
 
   return (
     <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
@@ -176,104 +179,105 @@ export default function RegisterScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  scrollContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    padding: spacing.lg,
-    minHeight: '100%',
-  },
-  formContainer: {
-    width: '100%',
-    maxWidth: 400,
-    alignSelf: 'center',
-  },
-  backButton: {
-    marginBottom: spacing.lg,
-  },
-  backButtonText: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: colors.primary,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-  },
-  inputContainer: {
-    marginBottom: spacing.md,
-  },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  input: {
-    backgroundColor: colors.cardBackground,
-    color: colors.text,
-    padding: spacing.md,
-    borderRadius: 8,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  passwordInput: {
-    flex: 1,
-    paddingRight: spacing.lg + 8,
-  },
-  inputError: {
-    borderColor: colors.error,
-  },
-  errorText: {
-    color: colors.error,
-    fontSize: 12,
-    marginTop: spacing.xs,
-    paddingHorizontal: spacing.xs,
-  },
-  eyeButton: {
-    position: 'absolute',
-    right: spacing.md,
-    padding: spacing.sm,
-  },
-  eyeIcon: {
-    fontSize: 18,
-  },
-  button: {
-    backgroundColor: colors.primary,
-    padding: spacing.md,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: spacing.lg,
-    justifyContent: 'center',
-    minHeight: 44,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: colors.background,
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  loginLink: {
-    color: colors.primary,
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: spacing.lg,
-    fontWeight: '600',
-  },
-});
+const createStyles = (colors: any, spacing: any) =>
+  StyleSheet.create({
+    scrollContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      justifyContent: 'center',
+      padding: spacing.lg,
+      minHeight: '100%',
+    },
+    formContainer: {
+      width: '100%',
+      maxWidth: 400,
+      alignSelf: 'center',
+    },
+    backButton: {
+      marginBottom: spacing.lg,
+    },
+    backButtonText: {
+      color: colors.primary,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    title: {
+      fontSize: 40,
+      fontWeight: 'bold',
+      color: colors.primary,
+      textAlign: 'center',
+      marginBottom: spacing.sm,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: spacing.xl,
+    },
+    inputContainer: {
+      marginBottom: spacing.md,
+    },
+    passwordContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      position: 'relative',
+    },
+    input: {
+      backgroundColor: colors.cardBackground,
+      color: colors.text,
+      padding: spacing.md,
+      borderRadius: 8,
+      fontSize: 16,
+      borderWidth: 1,
+      borderColor: 'transparent',
+    },
+    passwordInput: {
+      flex: 1,
+      paddingRight: spacing.lg + 8,
+    },
+    inputError: {
+      borderColor: colors.error,
+    },
+    errorText: {
+      color: colors.error,
+      fontSize: 12,
+      marginTop: spacing.xs,
+      paddingHorizontal: spacing.xs,
+    },
+    eyeButton: {
+      position: 'absolute',
+      right: spacing.md,
+      padding: spacing.sm,
+    },
+    eyeIcon: {
+      fontSize: 18,
+    },
+    button: {
+      backgroundColor: colors.primary,
+      padding: spacing.md,
+      borderRadius: 8,
+      alignItems: 'center',
+      marginTop: spacing.lg,
+      justifyContent: 'center',
+      minHeight: 44,
+    },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
+    buttonText: {
+      color: colors.background,
+      fontSize: 18,
+      fontWeight: '600',
+    },
+    loginLink: {
+      color: colors.primary,
+      fontSize: 14,
+      textAlign: 'center',
+      marginTop: spacing.lg,
+      fontWeight: '600',
+    },
+  });

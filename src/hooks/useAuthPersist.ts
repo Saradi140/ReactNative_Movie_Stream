@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { logout, setUsername } from '../redux/authSlice';
+import { loginSuccess, logout } from '../redux/authSlice';
 import { AppDispatch } from '../redux/store';
 
 export const useAuthPersist = () => {
@@ -14,7 +14,8 @@ export const useAuthPersist = () => {
         const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
 
         if (isLoggedIn === 'true' && username) {
-          dispatch(setUsername(username));
+          // Fully restore auth state in Redux so navigation decisions remain correct
+          dispatch(loginSuccess(username));
         } else {
           dispatch(logout());
         }
