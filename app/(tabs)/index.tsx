@@ -13,19 +13,32 @@ import {
   View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoading, setMovies } from '../../src/redux/movieSlice';
+import { addFavorite, removeFavorite, setLoading, setMovies } from '../../src/redux/movieSlice';
+import { RootState } from '../../src/redux/store';
 import { colors, spacing } from '../../src/styles/theme';
 
 export default function HomeScreen() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { allMovies, loading } = useSelector((state: any) => state.movies);
+  const { allMovies, loading, favorites } = useSelector((state: RootState) => state.movies);
   const [username, setUsername] = useState('');
 
   useEffect(() => {
     loadUsername();
     fetchMovies();
+    loadFavoritesFromStorage();
   }, []);
+
+  const loadFavoritesFromStorage = async () => {
+    try {
+      const storedFavorites = await AsyncStorage.getItem('favorites');
+      if (storedFavorites) {
+        // Favorites are already in Redux from previous sessions
+      }
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    }
+  };
 
   const loadUsername = async () => {
     const name = await AsyncStorage.getItem('username');
@@ -61,25 +74,58 @@ export default function HomeScreen() {
     router.replace('/login');
   };
 
-  const renderMovie = ({ item }: any) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => router.push({ pathname: '/details', params: { movie: JSON.stringify(item) } })}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <View style={styles.cardContent}>
-        <Text style={styles.title} numberOfLines={1}>
-          {item.title}
-        </Text>
-        <Text style={styles.description} numberOfLines={1}>
-          {item.description}
-        </Text>
-        <View style={styles.ratingContainer}>
-          <Ionicons name="star" size={16} color={colors.success} />
-          <Text style={styles.rating}>{item.rating.toFixed(1)}</Text>
+  const renderMovie = ({ item }: any) => {
+    const isFavorite = favorites.some((fav: any) => fav.id === item.id);
+    
+    const handleToggleFavorite = async () => {
+      try {
+        if (isFavorite) {
+          dispatch(removeFavorite(item.id));
+          const updatedFavorites = favorites.filter((fav: any) => fav.id !== item.id);
+          await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+        } else {
+          dispatch(addFavorite(item));
+          const updatedFavorites = [...favorites, item];
+          await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+        }
+      } catch (error) {
+        console.error('Error updating favorites:', error);
+      }
+    };
+
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => router.push({ pathname: '/details', params: { movie: JSON.stringify(item) } })}
+      >
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: item.image }} style={styles.image} />
+          <TouchableOpacity
+            style={styles.favoriteIcon}
+            onPress={handleToggleFavorite}
+          >
+            <Ionicons
+              name={isFavorite ? 'heart' : 'heart-outline'}
+              size={24}
+              color={isFavorite ? colors.error : colors.text}
+            />
+          </TouchableOpacity>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+        <View style={styles.cardContent}>
+          <Text style={styles.title} numberOfLines={1}>
+            {item.title}
+          </Text>
+          <Text style={styles.description} numberOfLines={1}>
+            {item.description}
+          </Text>
+          <View style={styles.ratingContainer}>
+            <Ionicons name="star" size={16} color={colors.success} />
+            <Text style={styles.rating}>{item.rating.toFixed(1)}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
@@ -148,9 +194,20 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     maxWidth: '48%',
   },
+  imageContainer: {
+    position: 'relative',
+  },
   image: {
     width: '100%',
     height: 200,
+  },
+  favoriteIcon: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 20,
+    padding: spacing.xs,
   },
   cardContent: {
     padding: spacing.md,

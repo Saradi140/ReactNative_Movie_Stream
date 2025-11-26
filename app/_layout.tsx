@@ -3,7 +3,7 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Provider, useSelector } from 'react-redux';
 import { useAuthPersist } from '../src/hooks/useAuthPersist';
-import { store, RootState } from '../src/redux/store';
+import { RootState, store } from '../src/redux/store';
 
 function RootLayoutNav() {
   const [isLoading, setIsLoading] = useState(true);
