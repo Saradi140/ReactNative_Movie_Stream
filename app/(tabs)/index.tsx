@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite, setLoading, setMovies } from '../../src/redux/movieSlice';
 import { RootState } from '../../src/redux/store';
 import { colors, spacing } from '../../src/styles/theme';
+import { buildApiUrl, TMDB_CONFIG } from '../../src/config/tmdbConfig';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -48,18 +49,21 @@ export default function HomeScreen() {
   const fetchMovies = async () => {
     dispatch(setLoading(true));
     try {
-      // Using DummyJSON recipes as "movies"
-      const response = await axios.get('https://dummyjson.com/recipes?limit=20');
-      const movies = response.data.recipes.map((recipe: any) => ({
-        id: recipe.id,
-        title: recipe.name,
-        description: `${recipe.cuisine} • ${recipe.difficulty}`,
-        image: recipe.image,
-        rating: recipe.rating,
-        cuisine: recipe.cuisine,
-        prepTime: recipe.prepTimeMinutes,
-        cookTime: recipe.cookTimeMinutes,
+      // Using The Movie Database (TMDb) API
+      const url = buildApiUrl(TMDB_CONFIG.ENDPOINTS.POPULAR_MOVIES, { page: 1 });
+      const response = await axios.get(url);
+      
+      const movies = response.data.results.map((movie: any) => ({
+        id: movie.id,
+        title: movie.title,
+        description: movie.overview,
+        image: `${TMDB_CONFIG.IMAGE_BASE_URL}${movie.poster_path}`,
+        rating: movie.vote_average,
+        releaseDate: movie.release_date,
+        genre: movie.genre_ids,
+        popularity: movie.popularity,
       }));
+      
       dispatch(setMovies(movies));
     } catch (error) {
       console.error('Error fetching movies:', error);

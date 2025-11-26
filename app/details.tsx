@@ -1,21 +1,21 @@
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFavorite, removeFavorite } from '../src/redux/movieSlice';
 import { RootState } from '../src/redux/store';
 import { colors, spacing } from '../src/styles/theme';
-import { Ionicons } from '@expo/vector-icons';
 
 export default function DetailsScreen() {
   const router = useRouter();
@@ -113,52 +113,28 @@ export default function DetailsScreen() {
         {movie.rating && (
           <View style={styles.ratingContainer}>
             <Ionicons name="star" size={20} color={colors.success} />
-            <Text style={styles.rating}>{movie.rating.toFixed(1)} Rating</Text>
+            <Text style={styles.rating}>{movie.rating.toFixed(1)}/10 Rating</Text>
           </View>
         )}
 
-        <Text style={styles.description}>{movie.description}</Text>
-
-        {movie.cuisine && (
+        {movie.releaseDate && (
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Cuisine:</Text>
-            <Text style={styles.infoValue}>{movie.cuisine}</Text>
+            <Text style={styles.infoLabel}>Release Date:</Text>
+            <Text style={styles.infoValue}>{movie.releaseDate}</Text>
           </View>
         )}
 
-        {movie.prepTime !== undefined && (
+        {movie.popularity !== undefined && (
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Prep Time:</Text>
-            <Text style={styles.infoValue}>{movie.prepTime} minutes</Text>
+            <Text style={styles.infoLabel}>Popularity:</Text>
+            <Text style={styles.infoValue}>{Math.round(movie.popularity)}</Text>
           </View>
         )}
 
-        {movie.cookTime !== undefined && (
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Cook Time:</Text>
-            <Text style={styles.infoValue}>{movie.cookTime} minutes</Text>
-          </View>
-        )}
-
-        {movie.ingredients && (
+        {movie.description && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Ingredients</Text>
-            {Array.isArray(movie.ingredients) && movie.ingredients.map((ingredient: any, index: number) => (
-              <Text key={index} style={styles.ingredient}>
-                • {typeof ingredient === 'string' ? ingredient : ingredient.name || JSON.stringify(ingredient)}
-              </Text>
-            ))}
-          </View>
-        )}
-
-        {movie.instructions && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Instructions</Text>
-            {Array.isArray(movie.instructions) && movie.instructions.map((instruction: any, index: number) => (
-              <Text key={index} style={styles.instruction}>
-                {index + 1}. {typeof instruction === 'string' ? instruction : instruction.instruction || JSON.stringify(instruction)}
-              </Text>
-            ))}
+            <Text style={styles.sectionTitle}>Overview</Text>
+            <Text style={styles.description}>{movie.description}</Text>
           </View>
         )}
 

@@ -1,20 +1,20 @@
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    FlatList,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadFavorites, removeFavorite } from '../../src/redux/movieSlice';
 import { RootState } from '../../src/redux/store';
 import { colors, spacing } from '../../src/styles/theme';
-import { Ionicons } from '@expo/vector-icons';
 
 export default function FavoritesScreen() {
   const router = useRouter();
