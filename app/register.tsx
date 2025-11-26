@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../src/redux/authSlice';
-import { registrationSchema, RegistrationFormData } from '../src/utils/validationSchemas';
-import { colors, spacing } from '../src/styles/theme';
 import { AppDispatch } from '../src/redux/store';
+import { colors, spacing } from '../src/styles/theme';
+import { RegistrationFormData, registrationSchema } from '../src/utils/validationSchemas';
 
 export default function RegisterScreen() {
   const [formData, setFormData] = useState<RegistrationFormData>({

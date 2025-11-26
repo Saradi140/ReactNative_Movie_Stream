@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../src/redux/authSlice';
-import { loginSchema, LoginFormData } from '../src/utils/validationSchemas';
-import { colors, spacing } from '../src/styles/theme';
 import { AppDispatch } from '../src/redux/store';
+import { colors, spacing } from '../src/styles/theme';
+import { LoginFormData, loginSchema } from '../src/utils/validationSchemas';
 
 export default function LoginScreen() {
   const [formData, setFormData] = useState<LoginFormData>({
@@ -49,21 +49,6 @@ export default function LoginScreen() {
     } catch (error) {
       Alert.alert('Error', 'Failed to login. Please try again.');
       console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDemoLogin = async () => {
-    setLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      await AsyncStorage.setItem('username', 'demo_user');
-      await AsyncStorage.setItem('isLoggedIn', 'true');
-      dispatch(loginSuccess('demo_user'));
-      router.replace('/(tabs)');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to login with demo account.');
     } finally {
       setLoading(false);
     }
@@ -129,24 +114,6 @@ export default function LoginScreen() {
               <Text style={styles.buttonText}>Login</Text>
             )}
           </TouchableOpacity>
-
-          <View style={styles.dividerContainer}>
-            <View style={styles.divider} />
-            <Text style={styles.dividerText}>or</Text>
-            <View style={styles.divider} />
-          </View>
-
-          <TouchableOpacity
-            style={[styles.demoButton, loading && styles.buttonDisabled]}
-            onPress={handleDemoLogin}
-            disabled={loading}
-          >
-            <Text style={styles.demoButtonText}>Demo Login</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.helperText}>
-            Demo credentials: demo_user / 123456
-          </Text>
         </View>
       </View>
     </ScrollView>
@@ -237,41 +204,5 @@ const styles = StyleSheet.create({
     color: colors.background,
     fontSize: 18,
     fontWeight: '600',
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: spacing.lg,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.cardBackground,
-  },
-  dividerText: {
-    marginHorizontal: spacing.md,
-    color: colors.textSecondary,
-    fontSize: 14,
-  },
-  demoButton: {
-    backgroundColor: colors.cardBackground,
-    padding: spacing.md,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.primary,
-    justifyContent: 'center',
-    minHeight: 44,
-  },
-  demoButtonText: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  helperText: {
-    color: colors.textSecondary,
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: spacing.md,
   },
 });

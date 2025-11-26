@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setUsername, logout } from '../redux/authSlice';
+import { logout, setUsername } from '../redux/authSlice';
 import { AppDispatch } from '../redux/store';
 
 export const useAuthPersist = () => {

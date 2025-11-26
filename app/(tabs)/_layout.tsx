@@ -1,11 +1,10 @@
-import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Tabs, useRouter } from 'expo-router';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../src/redux/store';
 import { colors } from '../../src/styles/theme';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
 
 function HeaderRight() {
   const username = useSelector((state: RootState) => state.auth.username);
