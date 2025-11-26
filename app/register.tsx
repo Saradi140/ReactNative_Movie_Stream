@@ -6,36 +6,39 @@ import { useDispatch } from 'react-redux';
 import { useTheme } from '../src/hooks/useTheme';
 import { loginSuccess } from '../src/redux/authSlice';
 import { AppDispatch } from '../src/redux/store';
-import { LoginFormData, loginSchema } from '../src/utils/validationSchemas';
+import { RegistrationFormData, registrationSchema } from '../src/utils/validationSchemas';
 
-export default function LoginScreen() {
-  const [formData, setFormData] = useState<LoginFormData>({
+export default function RegisterScreen() {
+  const [formData, setFormData] = useState<RegistrationFormData>({
     username: '',
+    email: '',
     password: '',
+    confirmPassword: '',
   });
-  const [errors, setErrors] = useState<Partial<LoginFormData>>({});
+  const [errors, setErrors] = useState<Partial<RegistrationFormData>>({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { colors, spacing } = useTheme();
 
   const validateForm = async () => {
     try {
-      await loginSchema.validate(formData, { abortEarly: false });
+      await registrationSchema.validate(formData, { abortEarly: false });
       setErrors({});
       return true;
     } catch (error: any) {
-      const newErrors: Partial<LoginFormData> = {};
+      const newErrors: Partial<RegistrationFormData> = {};
       error.inner.forEach((err: any) => {
-        newErrors[err.path as keyof LoginFormData] = err.message;
+        newErrors[err.path as keyof RegistrationFormData] = err.message;
       });
       setErrors(newErrors);
       return false;
     }
   };
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     if (!(await validateForm())) {
       return;
     }
@@ -43,15 +46,29 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Store user info
       await AsyncStorage.setItem('username', formData.username);
+      await AsyncStorage.setItem('email', formData.email);
       await AsyncStorage.setItem('isLoggedIn', 'true');
+      
+      // Update Redux state
       dispatch(loginSuccess(formData.username));
+
+      Alert.alert('Success', 'Account created successfully!');
       router.replace('/(tabs)');
     } catch (error) {
-      Alert.alert('Error', 'Failed to login. Please try again.');
+      Alert.alert('Error', 'Failed to create account. Please try again.');
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleInputChange = (field: keyof RegistrationFormData, value: string) => {
+    setFormData({ ...formData, [field]: value });
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: undefined });
     }
   };
 
@@ -61,8 +78,12 @@ export default function LoginScreen() {
     <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
         <View style={styles.formContainer}>
-          <Text style={styles.title}>StreamBox</Text>
-          <Text style={styles.subtitle}>Your Entertainment Hub</Text>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>Join StreamBox Today</Text>
 
           <View style={styles.inputContainer}>
             <TextInput
@@ -70,14 +91,25 @@ export default function LoginScreen() {
               placeholder="Username"
               placeholderTextColor={colors.textSecondary}
               value={formData.username}
-              onChangeText={(text) => {
-                setFormData({ ...formData, username: text });
-                if (errors.username) setErrors({ ...errors, username: undefined });
-              }}
+              onChangeText={(text) => handleInputChange('username', text)}
               autoCapitalize="none"
               editable={!loading}
             />
             {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
+          </View>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={[styles.input, errors.email && styles.inputError]}
+              placeholder="Email"
+              placeholderTextColor={colors.textSecondary}
+              value={formData.email}
+              onChangeText={(text) => handleInputChange('email', text)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              editable={!loading}
+            />
+            {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
           </View>
 
           <View style={styles.inputContainer}>
@@ -87,10 +119,7 @@ export default function LoginScreen() {
                 placeholder="Password"
                 placeholderTextColor={colors.textSecondary}
                 value={formData.password}
-                onChangeText={(text) => {
-                  setFormData({ ...formData, password: text });
-                  if (errors.password) setErrors({ ...errors, password: undefined });
-                }}
+                onChangeText={(text) => handleInputChange('password', text)}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
                 editable={!loading}
@@ -106,16 +135,43 @@ export default function LoginScreen() {
             {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
           </View>
 
+          <View style={styles.inputContainer}>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={[styles.input, styles.passwordInput, errors.confirmPassword && styles.inputError]}
+                placeholder="Confirm Password"
+                placeholderTextColor={colors.textSecondary}
+                value={formData.confirmPassword}
+                onChangeText={(text) => handleInputChange('confirmPassword', text)}
+                secureTextEntry={!showConfirmPassword}
+                autoCapitalize="none"
+                editable={!loading}
+              />
+              <TouchableOpacity
+                style={styles.eyeButton}
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={loading}
+              >
+                <Text style={styles.eyeIcon}>{showConfirmPassword ? '👁️' : '👁️‍🗨️'}</Text>
+              </TouchableOpacity>
+            </View>
+            {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+          </View>
+
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleLogin}
+            onPress={handleRegister}
             disabled={loading}
           >
             {loading ? (
               <ActivityIndicator color={colors.background} size="small" />
             ) : (
-              <Text style={styles.buttonText}>Login</Text>
+              <Text style={styles.buttonText}>Create Account</Text>
             )}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => router.back()} disabled={loading}>
+            <Text style={styles.loginLink}>Already have an account? Login</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -141,8 +197,16 @@ const createStyles = (colors: any, spacing: any) =>
       maxWidth: 400,
       alignSelf: 'center',
     },
+    backButton: {
+      marginBottom: spacing.lg,
+    },
+    backButtonText: {
+      color: colors.primary,
+      fontSize: 16,
+      fontWeight: '600',
+    },
     title: {
-      fontSize: 48,
+      fontSize: 40,
       fontWeight: 'bold',
       color: colors.primary,
       textAlign: 'center',
@@ -197,7 +261,7 @@ const createStyles = (colors: any, spacing: any) =>
       padding: spacing.md,
       borderRadius: 8,
       alignItems: 'center',
-      marginTop: spacing.md,
+      marginTop: spacing.lg,
       justifyContent: 'center',
       minHeight: 44,
     },
@@ -207,6 +271,13 @@ const createStyles = (colors: any, spacing: any) =>
     buttonText: {
       color: colors.background,
       fontSize: 18,
+      fontWeight: '600',
+    },
+    loginLink: {
+      color: colors.primary,
+      fontSize: 14,
+      textAlign: 'center',
+      marginTop: spacing.lg,
       fontWeight: '600',
     },
   });

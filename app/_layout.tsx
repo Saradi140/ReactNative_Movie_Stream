@@ -1,14 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Provider } from 'react-redux';
-import { store } from '../src/redux/store';
+import { Provider, useSelector } from 'react-redux';
+import { useAuthPersist } from '../src/hooks/useAuthPersist';
+import { RootState, store } from '../src/redux/store';
 
 function RootLayoutNav() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const segments = useSegments();
   const router = useRouter();
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
+
+  // Use auth persistence hook
+  useAuthPersist();
 
   useEffect(() => {
     checkLoginStatus();
@@ -16,8 +20,7 @@ function RootLayoutNav() {
 
   const checkLoginStatus = async () => {
     try {
-      const loggedIn = await AsyncStorage.getItem('isLoggedIn');
-      setIsLoggedIn(loggedIn === 'true');
+      await AsyncStorage.getItem('isLoggedIn');
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -40,7 +43,7 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="details" options={{ headerShown: true, title: 'Details' }} />
+      <Stack.Screen name="details" options={{ headerShown: true, title: 'Movie Details' }} />
     </Stack>
   );
 }

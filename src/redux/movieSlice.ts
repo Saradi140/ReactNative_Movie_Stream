@@ -1,33 +1,52 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface Movie {
+  id: string | number;
+  title: string;
+  [key: string]: any;
+}
+
+interface MoviesState {
+  allMovies: Movie[];
+  favorites: Movie[];
+  selectedMovie: Movie | null;
+  loading: boolean;
+}
+
+const initialState: MoviesState = {
+  allMovies: [],
+  favorites: [],
+  selectedMovie: null,
+  loading: false,
+};
 
 const moviesSlice = createSlice({
   name: 'movies',
-  initialState: {
-    allMovies: [],
-    favorites: [],
-    loading: false,
-  },
+  initialState,
   reducers: {
-    setMovies: (state, action) => {
+    setMovies: (state, action: PayloadAction<Movie[]>) => {
       state.allMovies = action.payload;
     },
-    addFavorite: (state, action) => {
+    addFavorite: (state, action: PayloadAction<Movie>) => {
       const exists = state.favorites.find(movie => movie.id === action.payload.id);
       if (!exists) {
         state.favorites.push(action.payload);
       }
     },
-    removeFavorite: (state, action) => {
+    removeFavorite: (state, action: PayloadAction<string | number>) => {
       state.favorites = state.favorites.filter(movie => movie.id !== action.payload);
     },
-    setLoading: (state, action) => {
+    setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
-    loadFavorites: (state, action) => {
+    loadFavorites: (state, action: PayloadAction<Movie[]>) => {
       state.favorites = action.payload;
+    },
+    setSelectedMovie: (state, action: PayloadAction<Movie | null>) => {
+      state.selectedMovie = action.payload;
     },
   },
 });
 
-export const { setMovies, addFavorite, removeFavorite, setLoading, loadFavorites } = moviesSlice.actions;
+export const { setMovies, addFavorite, removeFavorite, setLoading, loadFavorites, setSelectedMovie } = moviesSlice.actions;
 export default moviesSlice.reducer;
